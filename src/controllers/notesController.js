@@ -17,13 +17,14 @@ export const getAllNotes = async (req, res, next) => {
       });
     }
 
-    const totalNotes = await Note.countDocuments(query.getFilter());
+    const [totalNotes, notes] = await Promise.all([
+      Note.countDocuments(query.getFilter()),
+      query
+        .skip((page - 1) * perPage)
+        .limit(perPage)
+        .exec(),
+    ]);
     const totalPages = Math.ceil(totalNotes / perPage);
-
-    const notes = await query
-      .skip((page - 1) * perPage)
-      .limit(perPage)
-      .exec();
 
     res.status(200).json({
       page: Number(page),

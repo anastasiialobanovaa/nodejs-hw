@@ -1,4 +1,4 @@
-import { celebrate, Joi, Segments } from 'celebrate';
+import Joi from 'joi';
 import { isValidObjectId } from 'mongoose';
 import { TAGS } from '../constants/tags.js';
 
@@ -9,40 +9,29 @@ const objectIdValidator = (value, helpers) => {
   return value;
 };
 
-export const getAllNotesSchema = celebrate({
-  [Segments.QUERY]: Joi.object({
-    page: Joi.number().integer().min(1).default(1),
-    perPage: Joi.number().integer().min(5).max(20).default(10),
-    tag: Joi.string().valid(...TAGS),
-    search: Joi.string().allow(''),
-  }),
+export const getAllNotesSchema = Joi.object({
+  page: Joi.number().integer().min(1).default(1),
+  perPage: Joi.number().integer().min(5).max(20).default(10),
+  tag: Joi.string().valid(...TAGS),
+  search: Joi.string().allow(''),
 });
 
-export const noteIdSchema = celebrate({
-  [Segments.PARAMS]: Joi.object({
-    noteId: Joi.string().custom(objectIdValidator).required(),
-  }),
+export const noteIdSchema = Joi.object({
+  noteId: Joi.string().custom(objectIdValidator).required(),
 });
 
-export const createNoteSchema = celebrate({
-  [Segments.BODY]: Joi.object({
-    title: Joi.string().min(1).required(),
-    content: Joi.string().allow('').optional(),
-    tag: Joi.string()
-      .valid(...TAGS)
-      .optional(),
-  }),
+export const createNoteSchema = Joi.object({
+  title: Joi.string().min(1).required(),
+  content: Joi.string().allow('').optional(),
+  tag: Joi.string()
+    .valid(...TAGS)
+    .optional(),
 });
 
-export const updateNoteSchema = celebrate({
-  [Segments.PARAMS]: Joi.object({
-    noteId: Joi.string().custom(objectIdValidator).required(),
-  }),
-  [Segments.BODY]: Joi.object({
-    title: Joi.string().min(1).optional(),
-    content: Joi.string().allow('').optional(),
-    tag: Joi.string()
-      .valid(...TAGS)
-      .optional(),
-  }).min(1),
-});
+export const updateNoteSchema = Joi.object({
+  title: Joi.string().min(1).optional(),
+  content: Joi.string().allow('').optional(),
+  tag: Joi.string()
+    .valid(...TAGS)
+    .optional(),
+}).min(1);
